@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arya · HM Consultant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%230f766e'/><text x='16' y='21' font-size='14' text-anchor='middle' fill='white' font-family='sans-serif'>A</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-name">Arya</div>
+          <div class="brand-sub">HM Design Consultant</div>
+        </div>
+      </div>
+      <button class="btn primary block" id="newChat">+ New consultation</button>
+      <div class="side-label">Consultations</div>
+      <nav class="conv-list" id="convList"></nav>
+      <div class="side-footer">
+        <button class="btn ghost block" id="openKb">Knowledge base <span class="pill" id="kbCount">0</span></button>
+        <div class="stats" id="stats"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="toggleSidebar" aria-label="Menu">☰</button>
+        <div class="avatar-wrap">
+          <svg class="avatar" id="avatar" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring" cx="60" cy="60" r="56" />
+            <circle cx="60" cy="60" r="50" class="face-bg" />
+            <path d="M28 52 C30 26 90 26 92 52 C92 40 80 30 60 30 C40 30 28 40 28 52Z" class="hair" />
+            <path d="M34 36 L86 36 L82 30 L38 30Z" class="helmet" />
+            <rect x="30" y="28" width="60" height="9" rx="4" class="helmet" />
+            <g class="eyes">
+              <ellipse cx="46" cy="60" rx="4.2" ry="5" class="eye" />
+              <ellipse cx="74" cy="60" rx="4.2" ry="5" class="eye" />
+            </g>
+            <path d="M40 50 Q46 47 52 50" class="brow" />
+            <path d="M68 50 Q74 47 80 50" class="brow" />
+            <path d="M48 80 Q60 88 72 80" class="mouth" id="mouth" />
+          </svg>
+        </div>
+        <div class="who">
+          <div class="who-name">Arya</div>
+          <div class="who-status" id="status">Ready to consult · IS codes & project documents</div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="voiceToggle" title="Read answers aloud" aria-pressed="false">🔈</button>
+        </div>
+      </header>
+
+      <section class="chat" id="chat">
+        <div class="welcome" id="welcome">
+          <h1>Good to see you. What are we designing today?</h1>
+          <p>I advise on gates, hoists, trash racks, penstocks, liners and bifurcations for HEP and PSP projects, grounded in IS codes and your own design documents, and I cite the clauses I rely on.</p>
+          <div class="suggestions">
+            <button class="suggest">How do I fix the shell thickness of a surface penstock per IS 11639 Part 1?</button>
+            <button class="suggest">Checklist to review a fixed wheel intake gate design per IS 4622</button>
+            <button class="suggest">What changes in HM design for a PSP compared with a conventional HEP?</button>
+            <button class="suggest">How should trash racks be checked for vibration in a pumped storage intake?</button>
+          </div>
+        </div>
+        <div id="messages"></div>
+      </section>
+
+      <form class="composer" id="composer">
+        <div class="scope" id="scope" hidden>
+          <span>Scoped to: <b id="scopeName"></b></span>
+          <button type="button" class="link" id="clearScope">clear</button>
+        </div>
+        <div class="composer-box">
+          <textarea id="input" rows="1" placeholder="Ask a design question, or paste inputs for a check…" maxlength="8000"></textarea>
+          <button class="btn primary" id="send" type="submit">Ask</button>
+        </div>
+        <div class="hint">Enter to send · Shift+Enter for new line · Answers are advisory; verify against the licensed code and contract specification.</div>
+      </form>
+    </main>
+  </div>
+
+  <!-- Knowledge base drawer -->
+  <div class="drawer-backdrop" id="kbBackdrop" hidden></div>
+  <aside class="drawer" id="kb" hidden aria-label="Knowledge base">
+    <div class="drawer-head">
+      <h2>Knowledge base</h2>
+      <button class="icon-btn" id="closeKb" aria-label="Close">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="docs">Documents</button>
+      <button class="tab" data-tab="upload">Add documents</button>
+      <button class="tab" data-tab="learned">Learned</button>
+    </div>
+
+    <div class="tab-panel" data-panel="docs">
+      <input class="search" id="docFilter" placeholder="Filter documents…" />
+      <div id="docList" class="list"></div>
+    </div>
+
+    <div class="tab-panel" data-panel="upload" hidden>
+      <form id="uploadForm" class="form">
+        <label class="drop" id="drop">
+          <input type="file" id="files" name="files" multiple accept=".pdf,.docx,.txt,.md,.csv" />
+          <span><b>Drop files</b> or click to browse<br /><small>PDF, DOCX, TXT, MD · up to 50 MB each</small></span>
+        </label>
+        <div id="fileNames" class="file-names"></div>
+        <label>Document type
+          <select name="type">
+            <option value="code">IS / international code</option>
+            <option value="design" selected>Design document (DBR, calculation, drawing notes, spec)</option>
+            <option value="note">Note / reference</option>
+          </select>
+        </label>
+        <label>Project <input name="project" placeholder="e.g. ABC PSP 1200 MW" /></label>
+        <label>Component
+          <select name="component">
+            <option value="">—</option>
+            <option>Intake gate</option><option>Draft tube gate</option><option>Spillway radial gate</option>
+            <option>Vertical lift gate</option><option>Stoplog</option><option>Trash rack</option><option>Hoist</option>
+            <option>Penstock / pressure shaft</option><option>Steel liner</option><option>Bifurcation / manifold</option>
+            <option>Embedded parts</option><option>Gantry crane</option><option>Other</option>
+          </select>
+        </label>
+        <label>Title (optional, single file) <input name="title" placeholder="Defaults to file name" /></label>
+        <button class="btn primary block" type="submit" id="uploadBtn">Upload & index</button>
+        <div id="uploadResult" class="upload-result"></div>
+      </form>
+    </div>
+
+    <div class="tab-panel" data-panel="learned" hidden>
+      <p class="muted">Arya learns project facts, your preferences and corrections from conversations, and keeps answers you mark 👍. Review and prune anything wrong.</p>
+      <form id="teachForm" class="teach">
+        <input id="teachText" placeholder="Teach a fact, e.g. “ABC PSP upper intake gates are 5.5 m × 7.0 m, design head 62 m”" />
+        <button class="btn primary">Add</button>
+      </form>
+      <div id="memList" class="list"></div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="markdown.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
