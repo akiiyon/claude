@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatPercent, SERIES_COLORS } from '@/lib/format'
 import type { Comparison } from '@/lib/types'
@@ -7,7 +8,8 @@ interface Props {
 }
 
 /** Overlay of % return since the start of the range — one shared axis, indexed to 0%. */
-export function PerformanceChart({ comparison }: Props) {
+/** Memoized so live-quote ticks elsewhere on the page don't restart the line-draw animation. */
+export const PerformanceChart = memo(function PerformanceChart({ comparison }: Props) {
   const { symbols, performance } = comparison
   const data = performance.map((p) => ({ time: p.time, ...p.values }))
   const lastIndex = data.length - 1
@@ -60,6 +62,7 @@ export function PerformanceChart({ comparison }: Props) {
             height={32}
             iconType="circle"
             iconSize={8}
+            itemSorter={null}
             formatter={(value: string) => <span className="font-mono text-xs text-muted">{value}</span>}
           />
           {symbols.map((symbol, i) => (
@@ -69,15 +72,13 @@ export function PerformanceChart({ comparison }: Props) {
               dataKey={symbol}
               stroke={SERIES_COLORS[i]}
               strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 5, stroke: 'var(--color-surface)', strokeWidth: 2 }}
-              animationDuration={900}
-              label={(props: { index?: number; x?: unknown; y?: unknown }) =>
+              // Direct label at the line's end; every other point renders nothing.
+              dot={(props: { index?: number; cx?: number; cy?: number }) =>
                 props.index === lastIndex ? (
                   <text
-                    key={`${symbol}-label`}
-                    x={Number(props.x) + 8}
-                    y={Number(props.y)}
+                    key={`${symbol}-end`}
+                    x={Number(props.cx) + 8}
+                    y={Number(props.cy)}
                     dy={4}
                     fontSize={11}
                     fontFamily="var(--font-mono)"
@@ -89,10 +90,12 @@ export function PerformanceChart({ comparison }: Props) {
                   <g key={`${symbol}-${props.index}`} />
                 )
               }
+              activeDot={{ r: 5, stroke: 'var(--color-surface)', strokeWidth: 2 }}
+              animationDuration={900}
             />
           ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
   )
-}
+})
