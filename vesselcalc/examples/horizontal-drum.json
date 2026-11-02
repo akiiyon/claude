@@ -1,0 +1,164 @@
+{
+  "name": "D-201 Horizontal Accumulator",
+  "units": "US",
+  "design": {
+    "orientation": "horizontal",
+    "P": 250,
+    "T": 400,
+    "Pext": 0,
+    "MDMT": -20,
+    "Tamb": 70,
+    "sg": 0.7,
+    "level": 54,
+    "hydroPosition": "horizontal",
+    "testType": "hydro"
+  },
+  "elements": [
+    {
+      "id": "LH",
+      "type": "head",
+      "kind": "ellipsoidal",
+      "name": "Left head",
+      "D": 72,
+      "t": 0.625,
+      "ratio": 2,
+      "sf": 2,
+      "material": "SA-516-70N",
+      "E": 1,
+      "c": 0.0625
+    },
+    {
+      "id": "S1",
+      "type": "shell",
+      "name": "Shell",
+      "D": 72,
+      "length": 288,
+      "t": 0.625,
+      "material": "SA-516-70N",
+      "E": 1,
+      "El": 0.85,
+      "c": 0.0625
+    },
+    {
+      "id": "RH",
+      "type": "head",
+      "kind": "torispherical",
+      "name": "Right head (F&D)",
+      "D": 72,
+      "t": 0.875,
+      "crownR": 72,
+      "knuckleR": 4.375,
+      "sf": 2,
+      "material": "SA-516-70N",
+      "E": 1,
+      "c": 0.0625
+    }
+  ],
+  "nozzles": [
+    {
+      "mark": "N1",
+      "name": "N1 Inlet 6\"",
+      "on": "S1",
+      "z": 40,
+      "angle": 0,
+      "OD": 6.625,
+      "tn": 0.432,
+      "ut": 0.125,
+      "c": 0.0625,
+      "material": "SA-106-B",
+      "projection": 8,
+      "leg41": 0.375,
+      "flangeClass": 300,
+      "padOD": 11,
+      "padT": 0.5,
+      "padMaterial": "SA-516-70N",
+      "leg42": 0.3125
+    },
+    {
+      "mark": "N2",
+      "name": "N2 Outlet 6\"",
+      "on": "S1",
+      "z": 250,
+      "angle": 180,
+      "OD": 6.625,
+      "tn": 0.432,
+      "ut": 0.125,
+      "c": 0.0625,
+      "material": "SA-106-B",
+      "projection": 8,
+      "leg41": 0.375,
+      "flangeClass": 300,
+      "padOD": 11,
+      "padT": 0.5,
+      "padMaterial": "SA-516-70N",
+      "leg42": 0.3125
+    },
+    {
+      "mark": "M1",
+      "name": "M1 Manway 20\"",
+      "on": "S1",
+      "z": 144,
+      "angle": 0,
+      "OD": 20,
+      "tn": 0.5,
+      "ut": 0,
+      "c": 0.0625,
+      "material": "SA-516-70N",
+      "projection": 10,
+      "padOD": 34,
+      "padT": 0.625,
+      "padMaterial": "SA-516-70N",
+      "leg41": 0.375,
+      "leg42": 0.375,
+      "flangeClass": 300
+    }
+  ],
+  "flanges": [
+    {
+      "name": "M1 cover flange (custom WN)",
+      "type": "integral",
+      "A": 30.5,
+      "B": 19.0,
+      "C": 27.0,
+      "t": 3.25,
+      "g0": 0.5,
+      "g1": 1.125,
+      "h": 4.0,
+      "nBolts": 24,
+      "boltDia": 1.125,
+      "material": "SA-105",
+      "boltMaterial": "SA-193-B7",
+      "gasket": "spiral-cs",
+      "gOD": 22.0,
+      "gID": 20.25,
+      "c": 0.0625
+    }
+  ],
+  "rings": [],
+  "details": [
+    {
+      "name": "Internals",
+      "mass": 800,
+      "z": 150
+    }
+  ],
+  "insulation": {
+    "t": 0,
+    "density": 0
+  },
+  "supports": {
+    "type": "saddles",
+    "saddles": {
+      "A": 36,
+      "theta": 120,
+      "b": 10,
+      "wearT": 0.375
+    }
+  },
+  "wind": {
+    "enabled": false
+  },
+  "seismic": {
+    "enabled": false
+  }
+}

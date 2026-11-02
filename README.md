@@ -58,3 +58,8 @@ docker run -p 3000:3000 --env-file .env -v arya-data:/app/data arya
 ```
 
 > The starter notes are summaries for orientation, not BIS code text. Upload licensed copies for clause-accurate citations. Arya is advisory; the engineer of record remains responsible for the design.
+
+## Other projects in this repository
+
+- [`vesselcalc/`](vesselcalc/README.md): **VesselCalc**, an educational pressure vessel design tool (ASME VIII-1 style calculations, nozzles, flanges, wind and seismic loads, saddles and skirts) with a browser UI. It needs no dependencies; run `cd vesselcalc && npm start`.
+- [`stockpulse/`](stockpulse/README.md): StockPulse.

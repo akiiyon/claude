@@ -1,0 +1,14 @@
+{
+  "name": "vesselcalc",
+  "version": "1.0.0",
+  "description": "Educational pressure vessel design tool (ASME VIII-1 style calculations) with a browser UI.",
+  "type": "module",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "node serve.js",
+    "test": "node --test test/*.test.js",
+    "calc": "node cli.js"
+  },
+  "engines": { "node": ">=20" }
+}

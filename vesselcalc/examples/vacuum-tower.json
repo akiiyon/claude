@@ -1,0 +1,178 @@
+{
+  "name": "T-301 Vacuum Tower with Cone",
+  "units": "US",
+  "design": {
+    "orientation": "vertical",
+    "P": 50,
+    "T": 250,
+    "Pext": 15,
+    "MDMT": 0,
+    "Tamb": 70,
+    "sg": 0.9,
+    "level": 60,
+    "hydroPosition": "horizontal",
+    "testType": "hydro"
+  },
+  "elements": [
+    {
+      "id": "BH",
+      "type": "head",
+      "kind": "hemispherical",
+      "name": "Bottom head",
+      "D": 96,
+      "t": 0.375,
+      "sf": 0,
+      "material": "SA-240-304L",
+      "E": 1,
+      "c": 0
+    },
+    {
+      "id": "S1",
+      "type": "shell",
+      "name": "Lower shell",
+      "D": 96,
+      "length": 360,
+      "t": 0.5,
+      "material": "SA-240-304L",
+      "E": 1,
+      "El": 1,
+      "c": 0
+    },
+    {
+      "id": "C1",
+      "type": "cone",
+      "name": "Transition cone",
+      "D1": 96,
+      "D2": 60,
+      "length": 48,
+      "t": 0.5,
+      "material": "SA-240-304L",
+      "E": 1,
+      "c": 0
+    },
+    {
+      "id": "S2",
+      "type": "shell",
+      "name": "Upper shell",
+      "D": 60,
+      "length": 240,
+      "t": 0.375,
+      "material": "SA-240-304L",
+      "E": 1,
+      "El": 1,
+      "c": 0
+    },
+    {
+      "id": "TH",
+      "type": "head",
+      "kind": "ellipsoidal",
+      "name": "Top head",
+      "D": 60,
+      "t": 0.375,
+      "ratio": 2,
+      "sf": 2,
+      "material": "SA-240-304L",
+      "E": 1,
+      "c": 0
+    }
+  ],
+  "nozzles": [
+    {
+      "mark": "N1",
+      "name": "N1 Feed 10\"",
+      "on": "S1",
+      "z": 300,
+      "angle": 90,
+      "OD": 10.75,
+      "tn": 0.365,
+      "ut": 0.125,
+      "c": 0,
+      "material": "SA-312-TP304",
+      "projection": 10,
+      "leg41": 0.3125,
+      "flangeClass": 150,
+      "flangeMaterial": "SA-182-F304"
+    },
+    {
+      "mark": "N2",
+      "name": "N2 Vapor 12\"",
+      "on": "TH",
+      "offset": 0,
+      "angle": 0,
+      "OD": 12.75,
+      "tn": 0.375,
+      "ut": 0.125,
+      "c": 0,
+      "material": "SA-312-TP304",
+      "projection": 10,
+      "leg41": 0.3125,
+      "flangeClass": 150,
+      "flangeMaterial": "SA-182-F304"
+    }
+  ],
+  "flanges": [],
+  "rings": [
+    {
+      "z": 120,
+      "h": 4,
+      "w": 0.5,
+      "material": "SA-240-304L"
+    },
+    {
+      "z": 240,
+      "h": 5,
+      "w": 0.5,
+      "material": "SA-240-304L"
+    }
+  ],
+  "details": [
+    {
+      "name": "Trays (operating liquid incl.)",
+      "mass": 6000,
+      "z": 400
+    }
+  ],
+  "insulation": {
+    "t": 3,
+    "density": 10
+  },
+  "supports": {
+    "type": "skirt",
+    "skirt": {
+      "D": 96.75,
+      "t": 0.5,
+      "height": 120,
+      "material": "SA-516-70",
+      "E": 0.7,
+      "c": 0.0625,
+      "nBolts": 16,
+      "boltDia": 1.25,
+      "boltCircle": 106,
+      "boltMaterial": "SA-193-B7",
+      "baseOD": 112,
+      "baseID": 88,
+      "baseT": 1.25,
+      "baseS": 24000,
+      "fc": 750
+    }
+  },
+  "wind": {
+    "enabled": true,
+    "V": 140,
+    "exposure": "D",
+    "Kzt": 1,
+    "Kd": 0.95,
+    "Ke": 1,
+    "G": 0.85,
+    "Cf": 0.7,
+    "Dmult": 1.2
+  },
+  "seismic": {
+    "enabled": true,
+    "SDS": 0.8,
+    "SD1": 0.4,
+    "R": 3,
+    "Ie": 1.25,
+    "TL": 8
+  }
+}

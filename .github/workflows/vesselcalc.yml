@@ -1,0 +1,21 @@
+name: vesselcalc
+
+on:
+  push:
+    paths: ["vesselcalc/**", ".github/workflows/vesselcalc.yml"]
+  pull_request:
+    paths: ["vesselcalc/**", ".github/workflows/vesselcalc.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vesselcalc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm test
+      - run: for f in examples/*.json; do node cli.js "$f" > /dev/null; done

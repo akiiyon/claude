@@ -1,0 +1,195 @@
+{
+  "name": "V-101 Vertical Separator",
+  "units": "US",
+  "design": {
+    "orientation": "vertical",
+    "P": 150,
+    "T": 300,
+    "Pext": 0,
+    "MDMT": -20,
+    "Tamb": 70,
+    "sg": 0.8,
+    "level": 300,
+    "hydroPosition": "horizontal",
+    "testType": "hydro"
+  },
+  "elements": [
+    {
+      "id": "BH",
+      "type": "head",
+      "kind": "ellipsoidal",
+      "name": "Bottom head",
+      "D": 60,
+      "t": 0.5,
+      "ratio": 2,
+      "sf": 2,
+      "material": "SA-516-70",
+      "E": 1,
+      "c": 0.125
+    },
+    {
+      "id": "S1",
+      "type": "shell",
+      "name": "Shell 1",
+      "D": 60,
+      "length": 240,
+      "t": 0.5,
+      "material": "SA-516-70",
+      "E": 0.85,
+      "El": 0.85,
+      "c": 0.125
+    },
+    {
+      "id": "S2",
+      "type": "shell",
+      "name": "Shell 2",
+      "D": 60,
+      "length": 240,
+      "t": 0.4375,
+      "material": "SA-516-70",
+      "E": 0.85,
+      "El": 0.85,
+      "c": 0.125
+    },
+    {
+      "id": "TH",
+      "type": "head",
+      "kind": "ellipsoidal",
+      "name": "Top head",
+      "D": 60,
+      "t": 0.5,
+      "ratio": 2,
+      "sf": 2,
+      "material": "SA-516-70",
+      "E": 1,
+      "c": 0.125
+    }
+  ],
+  "nozzles": [
+    {
+      "mark": "N1",
+      "name": "N1 Inlet 8\"",
+      "on": "S1",
+      "z": 60,
+      "angle": 0,
+      "OD": 8.625,
+      "tn": 0.5,
+      "ut": 0.125,
+      "c": 0.125,
+      "material": "SA-106-B",
+      "projection": 8,
+      "leg41": 0.375,
+      "flangeClass": 150,
+      "padOD": 14,
+      "padT": 0.5,
+      "padMaterial": "SA-516-70",
+      "leg42": 0.375
+    },
+    {
+      "mark": "M1",
+      "name": "M1 Manway 24\"",
+      "on": "S2",
+      "z": 120,
+      "angle": 180,
+      "OD": 24,
+      "tn": 0.5,
+      "ut": 0,
+      "c": 0.125,
+      "material": "SA-516-70",
+      "projection": 10,
+      "padOD": 40,
+      "padT": 0.5,
+      "padMaterial": "SA-516-70",
+      "leg41": 0.375,
+      "leg42": 0.375,
+      "flangeClass": 150
+    },
+    {
+      "mark": "N2",
+      "name": "N2 Vapor out 4\"",
+      "on": "TH",
+      "offset": 0,
+      "angle": 0,
+      "OD": 4.5,
+      "tn": 0.531,
+      "ut": 0.125,
+      "c": 0.125,
+      "material": "SA-106-B",
+      "projection": 8,
+      "leg41": 0.25,
+      "flangeClass": 150
+    },
+    {
+      "mark": "N3",
+      "name": "N3 Drain 2\"",
+      "on": "BH",
+      "offset": 0,
+      "angle": 0,
+      "OD": 2.375,
+      "tn": 0.344,
+      "ut": 0.125,
+      "c": 0.125,
+      "material": "SA-106-B",
+      "projection": 8,
+      "leg41": 0.25,
+      "flangeClass": 150
+    }
+  ],
+  "flanges": [],
+  "rings": [],
+  "details": [
+    {
+      "name": "Internals (demister, baffles)",
+      "mass": 600,
+      "z": 420
+    },
+    {
+      "name": "Platform & ladder",
+      "mass": 1500,
+      "z": 300
+    }
+  ],
+  "insulation": {
+    "t": 2,
+    "density": 8
+  },
+  "supports": {
+    "type": "skirt",
+    "skirt": {
+      "D": 61,
+      "t": 0.375,
+      "height": 96,
+      "material": "SA-516-70",
+      "E": 0.7,
+      "c": 0.0625,
+      "nBolts": 12,
+      "boltDia": 1.25,
+      "boltCircle": 68,
+      "boltMaterial": "SA-193-B7",
+      "baseOD": 74,
+      "baseID": 54,
+      "baseT": 1.0,
+      "baseS": 24000,
+      "fc": 750
+    }
+  },
+  "wind": {
+    "enabled": true,
+    "V": 115,
+    "exposure": "C",
+    "Kzt": 1,
+    "Kd": 0.95,
+    "Ke": 1,
+    "G": 0.85,
+    "Cf": 0.7,
+    "Dmult": 1.2
+  },
+  "seismic": {
+    "enabled": true,
+    "SDS": 0.5,
+    "SD1": 0.3,
+    "R": 3,
+    "Ie": 1,
+    "TL": 8
+  }
+}

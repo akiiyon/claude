@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VesselCalc</title>
+<link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.5"/></svg>VesselCalc <span class="tag">educational</span></div>
+  <input id="vname" class="vname" aria-label="Vessel name">
+  <div class="actions">
+    <button id="btnNew">New</button>
+    <select id="selExample" aria-label="Load example">
+      <option value="">Examples…</option>
+      <option value="vertical-column">Vertical separator (skirt, wind, seismic)</option>
+      <option value="horizontal-drum">Horizontal drum (saddles, App. 2 flange)</option>
+      <option value="vacuum-tower">Vacuum tower (cone, rings, SS)</option>
+    </select>
+    <label class="btn">Open<input id="fileOpen" type="file" accept=".json,application/json" hidden></label>
+    <button id="btnSave">Save</button>
+    <div class="seg" role="group" aria-label="Units">
+      <button data-units="US" class="on">US</button><button data-units="SI">SI</button>
+    </div>
+    <button id="btnPrint" class="primary">Print report</button>
+  </div>
+</header>
+
+<main class="layout">
+  <nav class="tree" id="tree" aria-label="Model tree"></nav>
+  <section class="canvas">
+    <div class="sketch-wrap" id="sketch"></div>
+    <div class="quick" id="quick"></div>
+  </section>
+  <aside class="props" id="props" aria-label="Properties"></aside>
+</main>
+
+<section class="results">
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="tabbody" id="tabbody"></div>
+</section>
+
+<div id="printable" class="printable"></div>
+
+<footer class="foot">
+  For learning only. Formulas follow the structure of ASME Section VIII Division 1, ASCE 7 and the Zick method; material and code table values are representative and must be verified against the current editions before any real design. Not a substitute for a licensed engineer or certified software.
+</footer>
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
