@@ -1,0 +1,49 @@
+// Power Automate > Power BI "Run a query against a dataset" - daily reminder digest.
+// Returns one row per engineer with the actions we owe (reviews in our court and
+// resubmissions of our deliverables) that are overdue or due within
+// Config > Settings > "Reminder Lead Days".
+// Result columns in the flow: [Engineer], [Email], [Item Count], [Items Html].
+EVALUATE
+VAR LeadDays =
+    COALESCE ( LOOKUPVALUE ( Settings[Value], Settings[Setting], "Reminder Lead Days" ), 3 )
+VAR Actions =
+    FILTER (
+        Revisions,
+        Revisions[Is Latest] = TRUE ()
+            && Revisions[Court] = "With Us"
+            && NOT ISBLANK ( Revisions[Action Days Left] )
+            && Revisions[Action Days Left] <= LeadDays
+    )
+VAR Lines =
+    ADDCOLUMNS (
+        Actions,
+        "@Engineer", RELATED ( Documents[Our Engineer] ),
+        "@Days", Revisions[Action Days Left],
+        "@Line",
+            "<li><b>" & Revisions[Doc No] & " " & Revisions[Rev] & "</b> - "
+                & RELATED ( Documents[Title] ) & " ("
+                & IF ( Revisions[Ball In Court] = "Reviewer", "review due ", "resubmission due " )
+                & FORMAT ( Revisions[Action Due Date], "dd mmm yyyy" )
+                & IF (
+                    Revisions[Action Days Left] < 0,
+                    ", <span style='color:#C00000'>" & ( 0 - Revisions[Action Days Left] )
+                        & " days overdue</span>",
+                    ", " & Revisions[Action Days Left] & " days left"
+                ) & ")</li>"
+    )
+VAR Engineers =
+    FILTER (
+        DISTINCT ( SELECTCOLUMNS ( Lines, "Engineer", [@Engineer] ) ),
+        NOT ISBLANK ( [Engineer] )
+    )
+RETURN
+    ADDCOLUMNS (
+        Engineers,
+        "Email", LOOKUPVALUE ( People[Email], People[Name], [Engineer] ),
+        "Item Count",
+            VAR E = [Engineer]
+            RETURN COUNTROWS ( FILTER ( Lines, [@Engineer] = E ) ),
+        "Items Html",
+            VAR E = [Engineer]
+            RETURN "<ul>" & CONCATENATEX ( FILTER ( Lines, [@Engineer] = E ), [@Line], "", [@Days], ASC ) & "</ul>"
+    )

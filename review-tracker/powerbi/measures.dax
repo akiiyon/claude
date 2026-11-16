@@ -1,0 +1,220 @@
+// =============================================================================
+// HM Review Tracker - DAX
+// Paste each block into Power BI Desktop as described in docs/BUILD_GUIDE.md:
+//   * "Calculated table" blocks: Modeling > New table
+//   * Measures: select the _Measures table, Modeling > New measure, paste one measure
+//     (name = expression). Put each in the display folder shown in its heading.
+// =============================================================================
+
+
+// ---------------------------------------------------------------- Calculated tables
+
+// Calculated table: _Measures   (an empty home table for all measures; hide its column)
+_Measures = { BLANK () }
+
+// Calculated table: Date   (mark as date table on [Date])
+Date =
+VAR FirstDate = MIN ( Revisions[Submitted Date] )
+VAR LastDate = MAX ( ReportInfo[As Of Date] )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR (
+            DATE ( YEAR ( COALESCE ( FirstDate, LastDate ) ), 1, 1 ),
+            DATE ( YEAR ( LastDate ), 12, 31 )
+        ),
+        "Year", YEAR ( [Date] ),
+        "Month", FORMAT ( [Date], "MMM yyyy" ),
+        "Month Sort", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
+    )
+// After creating: sort Date[Month] by Date[Month Sort].
+
+
+// ---------------------------------------------------------------- Folder: 1 Documents
+
+Docs Planned = COUNTROWS ( Documents )
+
+Docs Submitted = CALCULATE ( COUNTROWS ( Documents ), Documents[Submission Count] > 0 )
+
+Docs Not Submitted = CALCULATE ( COUNTROWS ( Documents ), Documents[Submission Count] = 0 )
+
+Docs Approved = CALCULATE ( COUNTROWS ( Documents ), Documents[Is Approved] = TRUE () )
+
+Docs Under Review =
+CALCULATE ( COUNTROWS ( Documents ), Documents[Document State] = "Under Review" )
+
+Docs To Resubmit =
+CALCULATE ( COUNTROWS ( Documents ), Documents[Ball In Court] = "Originator" )
+
+% Approved = DIVIDE ( [Docs Approved], [Docs Planned] )
+
+Docs With Us = CALCULATE ( COUNTROWS ( Documents ), Documents[Court] = "With Us" )
+
+Docs With Others = CALCULATE ( COUNTROWS ( Documents ), Documents[Court] = "With Others" )
+
+Docs Late Submission =
+CALCULATE ( COUNTROWS ( Documents ), Documents[Is Late Submission] = TRUE () )
+
+Docs Stuck = CALCULATE ( COUNTROWS ( Documents ), Documents[Is Stuck] = TRUE () )
+
+Avg Submissions To Approval =
+AVERAGEX (
+    FILTER ( Documents, Documents[Is Approved] = TRUE () ),
+    Documents[Submission Count]
+)
+
+
+// ---------------------------------------------------------------- Folder: 2 Reviews
+
+Submissions = COUNTROWS ( Revisions )
+
+// Revision history matrix: Documents[Doc No] on rows, Revisions[Seq] on columns.
+Rev Status Label =
+VAR Rev = SELECTEDVALUE ( Revisions[Rev] )
+VAR Code = SELECTEDVALUE ( Revisions[Status Code] )
+RETURN
+    IF ( NOT ISBLANK ( Rev ), Rev & " - " & IF ( ISBLANK ( Code ), "in review", Code ) )
+
+Open Reviews = CALCULATE ( COUNTROWS ( Revisions ), Revisions[Is Open Review] = TRUE () )
+
+Overdue Reviews = CALCULATE ( COUNTROWS ( Revisions ), Revisions[Is Overdue] = TRUE () )
+
+// Our open actions (reviews we owe and resubmissions we owe) due in the next 14 days.
+Actions Due In 14 Days =
+CALCULATE (
+    COUNTROWS ( Revisions ),
+    Revisions[Is Latest] = TRUE (),
+    Revisions[Court] = "With Us",
+    Revisions[Action Days Left] >= 0,
+    Revisions[Action Days Left] <= 14
+)
+
+Our Overdue Actions =
+CALCULATE (
+    COUNTROWS ( Revisions ),
+    Revisions[Is Latest] = TRUE (),
+    Revisions[Court] = "With Us",
+    Revisions[Action Days Left] < 0
+)
+
+Their Overdue Actions =
+CALCULATE (
+    COUNTROWS ( Revisions ),
+    Revisions[Is Latest] = TRUE (),
+    Revisions[Court] = "With Others",
+    Revisions[Action Days Left] < 0
+)
+
+Avg Review Days =
+CALCULATE ( AVERAGE ( Revisions[Review Days] ), Revisions[Is Open Review] = FALSE () )
+
+Avg Resubmission Days =
+CALCULATE (
+    AVERAGE ( Revisions[Resubmission Days] ),
+    NOT ISBLANK ( Revisions[Next Submitted Date] )
+)
+
+% Reviews On Time =
+DIVIDE (
+    CALCULATE (
+        COUNTROWS ( Revisions ),
+        Revisions[Is Open Review] = FALSE (),
+        Revisions[Reviewer Delay Days] = 0
+    ),
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[Is Open Review] = FALSE () )
+)
+
+Submissions Received =
+CALCULATE ( COUNTROWS ( Revisions ), USERELATIONSHIP ( Revisions[Submitted Date], 'Date'[Date] ) )
+
+Reviews Returned =
+CALCULATE ( COUNTROWS ( Revisions ), USERELATIONSHIP ( Revisions[Returned Date], 'Date'[Date] ) )
+
+
+// ---------------------------------------------------------------- Folder: 3 Delays
+
+// Delay days beyond the allowed period. Who caused it depends on the loop:
+//   Our Deliverable  - we are the originator, the client reviews
+//   External Review  - the contractor is the originator, we review
+Delay Days By Us =
+CALCULATE ( SUM ( Revisions[Reviewer Delay Days] ), Documents[Loop] = "External Review" )
+    + CALCULATE ( SUM ( Revisions[Originator Delay Days] ), Documents[Loop] = "Our Deliverable" )
+
+Delay Days By Others =
+CALCULATE ( SUM ( Revisions[Reviewer Delay Days] ), Documents[Loop] = "Our Deliverable" )
+    + CALCULATE ( SUM ( Revisions[Originator Delay Days] ), Documents[Loop] = "External Review" )
+
+Reviewer Delay Days = SUM ( Revisions[Reviewer Delay Days] )
+
+Originator Delay Days = SUM ( Revisions[Originator Delay Days] )
+
+
+// ---------------------------------------------------------------- Folder: 4 Comments
+
+// Distinct comments (a comment carried forward is counted once, in the revision it was raised).
+Comments Raised = CALCULATE ( COUNTROWS ( Comments ), Comments[Is First Listing] = TRUE () )
+
+Open Comments = CALCULATE ( COUNTROWS ( Comments ), Comments[Is Open Now] = TRUE () )
+
+Closed Comments =
+CALCULATE (
+    COUNTROWS ( Comments ),
+    Comments[Is Latest Listing] = TRUE (),
+    Comments[Status] = "Closed"
+)
+
+% Comments Closed = DIVIDE ( [Closed Comments], [Closed Comments] + [Open Comments] )
+
+Major Open Comments =
+CALCULATE (
+    COUNTROWS ( Comments ),
+    Comments[Is Open Now] = TRUE (),
+    Comments[Severity] = "Major"
+)
+
+Carried Forward Open =
+CALCULATE (
+    COUNTROWS ( Comments ),
+    Comments[Is Open Now] = TRUE (),
+    Comments[Is Carried Forward] = TRUE ()
+)
+
+// For the "is the iteration converging?" chart: put Revisions[Seq] on the axis.
+// Counts the comments still open in each submission's CRS.
+Open Comments At Submission =
+CALCULATE ( COUNTROWS ( Comments ), Comments[Status] = "Open" )
+
+Comments Per Submission = DIVIDE ( COUNTROWS ( Comments ), DISTINCTCOUNT ( Comments[RevKey] ) )
+
+// Repeated issues: use with CommentLibrary[Std Code] on rows.
+Times Raised = [Comments Raised]
+
+Projects Affected =
+CALCULATE ( DISTINCTCOUNT ( Comments[Project Code] ), Comments[Is First Listing] = TRUE () )
+
+
+// ---------------------------------------------------------------- Folder: 5 Report
+
+Data As Of = "Data as of " & FORMAT ( MAX ( ReportInfo[As Of Date] ), "dd mmm yyyy" )
+
+Data Errors = CALCULATE ( COUNTROWS ( DataIssues ), DataIssues[Level] = "Error" ) + 0
+
+Data Warnings = CALCULATE ( COUNTROWS ( DataIssues ), DataIssues[Level] = "Warning" ) + 0
+
+Data Quality Label =
+IF (
+    [Data Errors] = 0,
+    "Data OK" & IF ( [Data Warnings] > 0, " (" & [Data Warnings] & " warnings)" ),
+    [Data Errors] & " data errors - see Data Quality"
+)
+
+// Colour for cards and table cells: use as Format > Conditional formatting > Field value.
+Action Colour =
+VAR DaysLeft = MIN ( Revisions[Action Days Left] )
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( DaysLeft ), BLANK (),
+        DaysLeft < 0, "#C00000",
+        DaysLeft <= 3, "#BF8F00",
+        "#2E7D32"
+    )
